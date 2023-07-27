@@ -1,1 +1,0 @@
-{"word":"Hello","word_type":"expression","meaning":"to say hi","context_clip":null,"image":null,"status":"inactive","last_modified":1690400366}

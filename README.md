@@ -14,3 +14,10 @@ use routes; // in main and call that function directly with the module name.
 
 ```
 3. If a directory is created for a package, then make sure to use mod.rs file inside it.
+
+
+Specs:
+
+- Each Word is stored as a file
+- Each File is mapped to a number
+- 
