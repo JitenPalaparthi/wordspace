@@ -3,11 +3,11 @@ use log::info;
 use std::env;
 mod routes;
 mod words;
+use words::Word;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
-
     let port_result = env::var("WORDSPACE_PORT");
     let mut port = String::new();
     match port_result {
@@ -35,7 +35,15 @@ async fn main() -> std::io::Result<()> {
 
     //let file_content = words::read_last_line_of_file("datastore/word.index").unwrap();
     // info!("->>>>>>>>>>>>{:?}", file_content);
-    HttpServer::new(|| App::new().service(routes::hello).service(words::add_word))
+
+    // string to struct
+
+    let js=r#"{"id":1,"word":"Hello","word_type":"expression","meaning":"to say hi","context_clip":null,"image":null,"status":"inactive","last_modified":1690549290}"#;
+
+   let word:Word= serde_json::from_str(js).unwrap();
+        info!("{:?}",word);
+
+    HttpServer::new(|| App::new().service(routes::hello).service(words::add_word).service(words::get_word))
         .bind("0.0.0.0:".to_string() + &port)?
         .run()
         .await

@@ -1,6 +1,9 @@
 use std::fs::File;
+use std::fs;
 use std::io::Write;
+use std::io::prelude::*;
 use std::fs::OpenOptions;
+use std::io::Error;
 use std::io::{self, BufRead};
 
 
@@ -60,3 +63,14 @@ pub fn read_last_line_of_file(file_path:&str)-> std::io::Result<String>{
     }
     Ok(last_line)
  }
+
+ pub fn read_file(file_path: &str) -> Result<String, Error> {
+    let mut file = File::open(file_path)?;
+    let mut content = String::new();
+    file.read_to_string(&mut content)?;
+    Ok(content)
+}
+
+pub fn delete_file(file_path: &str) -> Result<(), Error> {
+    fs::remove_file(file_path)
+}

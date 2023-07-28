@@ -9,3 +9,11 @@
 ```
 exprt WORDSPACE_PORT=8085
 ```
+
+### make sure only owners of the directory can perfrom operations
+
+```
+chmod 700 datastore
+```
+
+### make wordspace program the owner of datastore
