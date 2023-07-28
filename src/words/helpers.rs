@@ -46,7 +46,7 @@ Ok(())
 
 
 pub fn read_last_line_of_file(file_path:&str)-> std::io::Result<String>{
-    let mut file = File::open(file_path)?;
+    let file = File::open(file_path)?;
 
     let reader=io::BufReader::new(file);
     let mut last_line:String=String::new();
