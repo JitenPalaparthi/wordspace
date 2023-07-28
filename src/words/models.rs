@@ -2,6 +2,7 @@ use super::CustomError;
 use serde::{Deserialize,Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Word {
+    pub id:i32,
     pub word: String,
     pub word_type: Option<String>,
     pub meaning: String,
@@ -12,6 +13,7 @@ pub struct Word {
 }
 
 pub fn new_word(
+    _id:i32,
     _word: &str,
     _word_type: &str,
     _meaning: &str,
@@ -23,6 +25,7 @@ pub fn new_word(
             return Err(CustomError{message:"invalid word".to_string(),})
         }
         let word= Word {
+                        id:_id,
                         word: _word.to_string(),
                         word_type: Some(_word_type.to_string()),
                         meaning: _meaning.to_string(),

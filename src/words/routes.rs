@@ -12,16 +12,6 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
     // 4- if file exists say word already existed
     // 5- if not create a file and store json data in the file
 
-    let mut word = _word.into_inner(); // 1
-    word.last_modified = Utc::now().timestamp(); // update last_modified time
-    if word.status == "active" {
-        word.status = "inactive".to_string();
-    }
-
-    let word_json = serde_json::to_string(&word).unwrap();
-
-    println!("{}", word_json);
-
     // 1- read last line from wordindex file
     // 2- if there is not line, set the file name as 1
     // 3- if there are lines , then pick the last line , split the file based on =
@@ -37,7 +27,7 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
             if lastline == "" {
                 counter = 1;
             } else {
-                let parts: Vec<&str> = lastline.splitn(2, '=').collect();
+                let parts: Vec<&str> = lastline.splitn(3, ',').collect();
                 match parts[0].parse::<i32>() {
                     Ok(v) => counter = v+1,
                     Err(e) => {
@@ -51,6 +41,19 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
         }
     }
 
+
+    let mut word = _word.into_inner(); // 1
+    word.last_modified = Utc::now().timestamp(); // update last_modified time
+    if word.status == "active" {
+        word.status = "inactive".to_string();
+    }
+    word.id=counter; // add counter to the word
+
+  
+
+    let word_json = serde_json::to_string(&word).unwrap();
+
+    println!("{}", word_json);
     //let ws: String = String::from("datastore/") + &word.word.clone() + &String::from(".ws");
     let ws: String = String::from("datastore/") + &counter.to_string();
 
@@ -58,14 +61,13 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
     match create_file_if_not_exists(&word_json.to_string(), &ws) {
         Ok(_) => {
 
-            let counterline:String=counter.to_string()+"="+&word.word.clone();
+            let counterline:String=counter.to_string()+","+&word.word.clone()+","+&word.meaning;
             match append_to_the_file(&counterline,"datastore/word.index"){
                 Err(e) => {
                     return HttpResponse::BadRequest().body(e.to_string());
                 }
                 Ok(_)=>{}
             }
-
 
             return HttpResponse::Ok().json(word);
         }
