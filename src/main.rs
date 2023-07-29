@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
    let word:Word= serde_json::from_str(js).unwrap();
         info!("{:?}",word);
 
-    HttpServer::new(|| App::new().service(routes::hello).service(words::add_word).service(words::get_word))
+    HttpServer::new(|| App::new().service(routes::hello).service(words::add_word).service(words::get_word).service(words::get_words))
         .bind("0.0.0.0:".to_string() + &port)?
         .run()
         .await

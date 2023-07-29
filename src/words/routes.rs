@@ -1,9 +1,9 @@
 use super::{
-    append_to_the_file, create_file_if_not_exists, read_file, read_last_line_of_file,delete_file, Word,
+    append_to_the_file, create_file_if_not_exists, read_file, read_last_line_of_file,delete_file,read_files_in_directory, Word,
 };
 use actix_web::{get, post,delete, web, HttpResponse, Responder};
 use chrono::Utc;
-use log::info;
+use log::{info, error};
 use serde_json;
 
 #[post("/v1/public/words")]
@@ -34,12 +34,14 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
                 match parts[0].parse::<i32>() {
                     Ok(v) => counter = v + 1,
                     Err(e) => {
+                        error!("{:?}",e.to_string());
                         return HttpResponse::BadRequest().body(e.to_string());
                     }
                 }
             }
         }
         Err(e) => {
+            error!("{:?}",e.to_string());
             return HttpResponse::BadRequest().body(e.to_string());
         }
     }
@@ -64,6 +66,7 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
                 counter.to_string() + "," + &word.word.clone() + "," + &word.meaning;
             match append_to_the_file(&counterline, "datastore/word.index") {
                 Err(e) => {
+                    error!("{:?}",e.to_string());
                     return HttpResponse::BadRequest().body(e.to_string());
                 }
                 Ok(_) => {}
@@ -72,6 +75,7 @@ pub async fn add_word(_word: web::Json<Word>) -> impl Responder {
             return HttpResponse::Ok().json(word);
         }
         Err(e) => {
+            error!("{:?}",e.to_string());
             return HttpResponse::BadRequest().body(e.to_string());
         }
     }
@@ -95,11 +99,13 @@ pub async fn get_word(id: web::Path<String>) -> impl Responder {
             match word {
                 Ok(_word) => HttpResponse::Ok().json(&_word),
                 Err(e) => {
+                    error!("{:?}",e.to_string());
                      HttpResponse::BadRequest().body(e.to_string())
                 }
             }
         }
         Err(e) => {
+            error!("{:?}",e.to_string());
              HttpResponse::BadRequest().body(e.to_string())
         }
     }
@@ -120,7 +126,47 @@ pub async fn delete_word(id:web::Path<String>)-> impl Responder{
             HttpResponse::Accepted().body("file successfully deleted")
         }
         Err(e)=>{
+            error!("{:?}",e.to_string());
             HttpResponse::BadRequest().body(e.to_string())
         }
     }
+}
+
+#[get("/v1/public/words/")]
+pub async fn get_words() -> impl Responder {
+    //  let js=r#"{"id":1,"word":"Hello","word_type":"expression","meaning":"to say hi","context_clip":null,"image":null,"status":"inactive","last_modified":1690549290}"#;
+
+    // let word:Word= serde_json::from_str(js).unwrap();
+    //      info!("{:?}",word);
+
+    let file_path = "datastore/".to_string();
+    info!(
+        "{:?}{}",
+        "reading the file from the following file path->", file_path
+    );
+    let mut words:Vec<Word>=Vec::new();
+    match read_files_in_directory(&file_path) {
+        Ok(wordcontents) => {
+           for wordcontent in wordcontents{
+            match serde_json::from_str::<Word>(&wordcontent){
+                Ok(word)=>{
+                    info!("{:?}{:?}{:?}","adding a word",word.word, "to the words vector");
+                    words.push(word);
+                },
+                Err(e)=>{
+                    error!("{:?}",e.to_string());
+                  // return HttpResponse::BadRequest().body(e.to_string());
+                }
+            }
+           }
+           info!("{:?}","successfully words data returned");
+           HttpResponse::Ok().json(&words)
+        }
+        Err(e) => {
+            error!("{:?}",e.to_string());
+             HttpResponse::BadRequest().body(e.to_string())
+        }
+    }
+
+    // HttpResponse::Ok().body("Hello World")
 }

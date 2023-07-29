@@ -74,3 +74,21 @@ pub fn read_last_line_of_file(file_path:&str)-> std::io::Result<String>{
 pub fn delete_file(file_path: &str) -> Result<(), Error> {
     fs::remove_file(file_path)
 }
+
+
+pub fn read_files_in_directory(directory_path: &str) -> Result<Vec<String>, Error> {
+    let mut file_contents = Vec::new();
+
+    for entry in fs::read_dir(directory_path)? {
+        let entry = entry?;
+        let file_path = entry.path();
+
+        if file_path.is_file() {
+            if let Ok(content) = fs::read_to_string(&file_path) {
+                file_contents.push(content);
+            }
+        }
+    }
+
+    Ok(file_contents)
+}

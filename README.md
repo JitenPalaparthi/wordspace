@@ -18,23 +18,28 @@ chmod 700 datastore
 
 ### make wordspace program the owner of datastore
 
-
+```
+sudo adduser --system --no-create-home wordspace
+sudo addgroup wordspace
+sudo chown wordspace:wordspace $HOME/wordspace
+sudo chmod 750 $HOME/wordspace
+```
 ### cross compile
 
 - To cross compile , you need to know target triple (which is from llvm).
 
 - List of few cross compile targets 
 
-| Target-triple-name       |                     | Description                             |
-|--------------------------|---------------------|-----------------------------------------|
-| x86_64-unknown-linux-gnu |                     | 64-bit Linux (kernel 3.2+, glibc 2.17+) |
-| x86_64-pc-windows-msvc   |                     | 64-bit MSVC (Windows 7+)                |
-| x86_64-apple-darwin      |                     | 64-bit macOS (10.7+, Lion+)             |
-| aarch64-unknown-linux-gnu|                     | ARM64 Linux (kernel 4.1, glibc 2.17+)   |
-| aarch64-apple-darwin     |                     | ARM64 macOS (11.0+, Big Sur+)           |
-| aarch64-apple-ios        |                     | ARM64 iOS                               |
-| aarch64-apple-ios-sim    |                     | Apple iOS Simulator on ARM64            |
-| armv7-linux-androideabi  |                     | ARMv7a Android                          |
+| Target-triple-name                             | Description                             |
+|------------------------------------------------|-----------------------------------------|
+| x86_64-unknown-linux-gnu                       | 64-bit Linux (kernel 3.2+, glibc 2.17+) |
+| x86_64-pc-windows-msvc                         | 64-bit MSVC (Windows 7+)                |
+| x86_64-apple-darwin                            | 64-bit macOS (10.7+, Lion+)             |
+| aarch64-unknown-linux-gnu                      | ARM64 Linux (kernel 4.1, glibc 2.17+)   |
+| aarch64-apple-darwin                           | ARM64 macOS (11.0+, Big Sur+)           |
+| aarch64-apple-ios                              | ARM64 iOS                               |
+| aarch64-apple-ios-sim                          | Apple iOS Simulator on ARM64            |
+| armv7-linux-androideabi                        | ARMv7a Android                          |
 
 - Install cross crate. This executable is stored i $HOME/.cargo/bin.
 
